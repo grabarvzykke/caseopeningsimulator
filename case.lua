@@ -12,12 +12,12 @@ local player = Players.LocalPlayer
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "CaseOpenerGUI"
 screenGui.ResetOnSpawn = false
-screenGui.Parent = game:GetService("CoreGui")
+screenGui.Parent = player:WaitForChild("PlayerGui")
 
 -- Draggable Frame
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 320, 0, 180)
-frame.Position = UDim2.new(0, 10, 0, 10)
+frame.Size = UDim2.new(0, 300, 0, 230)
+frame.Position = UDim2.new(0, 20, 0, 50)
 frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 frame.BorderSizePixel = 0
 frame.Active = true
@@ -47,7 +47,7 @@ wsLabel.Parent = frame
 
 local jpLabel = Instance.new("TextLabel")
 jpLabel.Text = "JumpPower: 50"
-jpLabel.Position = UDim2.new(0, 10, 0, 70)
+jpLabel.Position = UDim2.new(0, 10, 0, 65)
 jpLabel.Size = UDim2.new(1, -20, 0, 20)
 jpLabel.TextColor3 = Color3.new(1,1,1)
 jpLabel.Font = Enum.Font.SourceSans
@@ -76,10 +76,10 @@ end
 setWalkSpeed(16)
 setJumpPower(50)
 
--- Button: Unlock Gamepasses
+-- Gamepasses Unlock Button
 local gamepassBtn = Instance.new("TextButton")
 gamepassBtn.Size = UDim2.new(1, -20, 0, 30)
-gamepassBtn.Position = UDim2.new(0, 10, 0, 100)
+gamepassBtn.Position = UDim2.new(0, 10, 0, 90)
 gamepassBtn.Text = "Unlock All Gamepasses"
 gamepassBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
 gamepassBtn.TextColor3 = Color3.new(1,1,1)
@@ -111,19 +111,19 @@ local function tryFastOpen()
 end
 tryFastOpen()
 
--- Auto Click (by screen position)
+-- Auto Clicker for Sell button
 local autoOpening = false
 local autoBtn = Instance.new("TextButton")
 autoBtn.Size = UDim2.new(1, -20, 0, 40)
-autoBtn.Position = UDim2.new(0, 10, 0, 140)
+autoBtn.Position = UDim2.new(0, 10, 0, 130)
 autoBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
 autoBtn.TextColor3 = Color3.new(1,1,1)
 autoBtn.Font = Enum.Font.GothamBold
 autoBtn.TextSize = 16
-autoBtn.Text = "Start Auto-Open"
+autoBtn.Text = "Start Auto-Sell Click"
 autoBtn.Parent = frame
 
--- Pozycja kliknięcia "Sprzedaj za $..." wg screena (mniej więcej środek przycisku, 1920x1080)
+-- Dokładne pozycje przycisku 'Sprzedaj' (można zmienić w razie potrzeby)
 local sellButtonX = 890
 local sellButtonY = 336
 
@@ -133,13 +133,13 @@ spawn(function()
             VirtualInputManager:SendMouseButtonEvent(sellButtonX, sellButtonY, 0, true, game, 0)
             VirtualInputManager:SendMouseButtonEvent(sellButtonX, sellButtonY, 0, false, game, 0)
         end
-        task.wait(0.2)
+        task.wait(0.1) -- Superszybki klikacz
     end
 end)
 
 autoBtn.MouseButton1Click:Connect(function()
     autoOpening = not autoOpening
-    autoBtn.Text = autoOpening and "Stop Auto-Open" or "Start Auto-Open"
+    autoBtn.Text = autoOpening and "Stop Auto-Sell Click" or "Start Auto-Sell Click"
     autoBtn.BackgroundColor3 = autoOpening and Color3.fromRGB(200, 50, 50) or Color3.fromRGB(0, 200, 100)
 end)
 
