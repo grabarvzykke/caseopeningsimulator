@@ -1,153 +1,173 @@
---[[
-Case Opener + Gamepasses + Auto Sell / Reroll + GUI [vFinal]
-Autor: ChatGPT x Twoje wymagania
-]]--
-
+-- SERVICES
 local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local VirtualInputManager = game:GetService("VirtualInputManager")
 local player = Players.LocalPlayer
+local uis = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
 
--- GUI Setup
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "CaseOpenerGUI"
+-- GUI SETUP
+local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+screenGui.Name = "GalacticCaseUI"
 screenGui.ResetOnSpawn = false
-screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- Draggable Frame
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 230)
+local frame = Instance.new("Frame", screenGui)
+frame.Size = UDim2.new(0, 320, 0, 320)
 frame.Position = UDim2.new(0, 20, 0, 50)
-frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+frame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
 frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
-frame.Parent = screenGui
 
--- Title
-local title = Instance.new("TextLabel")
-title.Text = "🎁 Case Opener + Gamepasses"
-title.Size = UDim2.new(1, 0, 0, 30)
-title.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.Font = Enum.Font.GothamBold
-title.TextSize = 16
-title.Parent = frame
+-- STYLING
+local uiCorner = Instance.new("UICorner", frame)
+uiCorner.CornerRadius = UDim.new(0, 16)
 
--- WalkSpeed / JumpPower Labels
-local wsLabel = Instance.new("TextLabel")
-wsLabel.Text = "WalkSpeed: 16"
-wsLabel.Position = UDim2.new(0, 10, 0, 40)
-wsLabel.Size = UDim2.new(1, -20, 0, 20)
-wsLabel.TextColor3 = Color3.new(1,1,1)
-wsLabel.Font = Enum.Font.SourceSans
-wsLabel.BackgroundTransparency = 1
-wsLabel.TextXAlignment = Enum.TextXAlignment.Left
-wsLabel.Parent = frame
+local uiGradient = Instance.new("UIGradient", frame)
+uiGradient.Color = ColorSequence.new{
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 170, 255)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 150))
+}
+uiGradient.Rotation = 45
+uiGradient.Transparency = NumberSequence.new(0.1)
 
-local jpLabel = Instance.new("TextLabel")
-jpLabel.Text = "JumpPower: 50"
-jpLabel.Position = UDim2.new(0, 10, 0, 65)
-jpLabel.Size = UDim2.new(1, -20, 0, 20)
-jpLabel.TextColor3 = Color3.new(1,1,1)
-jpLabel.Font = Enum.Font.SourceSans
-jpLabel.BackgroundTransparency = 1
-jpLabel.TextXAlignment = Enum.TextXAlignment.Left
-jpLabel.Parent = frame
-
--- Set WalkSpeed
-local function setWalkSpeed(value)
-    local char = player.Character
-    wsLabel.Text = "WalkSpeed: "..value
-    if char and char:FindFirstChild("Humanoid") then
-        char.Humanoid.WalkSpeed = value
-    end
-end
-
--- Set JumpPower
-local function setJumpPower(value)
-    local char = player.Character
-    jpLabel.Text = "JumpPower: "..value
-    if char and char:FindFirstChild("Humanoid") then
-        char.Humanoid.JumpPower = value
-    end
-end
-
-setWalkSpeed(16)
-setJumpPower(50)
-
--- Gamepasses Unlock Button
-local gamepassBtn = Instance.new("TextButton")
-gamepassBtn.Size = UDim2.new(1, -20, 0, 30)
-gamepassBtn.Position = UDim2.new(0, 10, 0, 90)
-gamepassBtn.Text = "Unlock All Gamepasses"
-gamepassBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
-gamepassBtn.TextColor3 = Color3.new(1,1,1)
-gamepassBtn.Font = Enum.Font.GothamBold
-gamepassBtn.TextSize = 14
-gamepassBtn.Parent = frame
-
-gamepassBtn.MouseButton1Click:Connect(function()
-    for _, v in pairs(game:GetDescendants()) do
-        if v:IsA("RemoteEvent") and (
-            v.Parent.Name == "WeaponsRemotes" or
-            v.Parent.Name == "VipRemotes" or
-            v.Parent.Name == "Remotes"
-        ) then
-            pcall(function()
-                v:FireServer()
-            end)
-        end
-    end
-end)
-
--- Fast Open Hack (if QuickOpen exists)
-local function tryFastOpen()
-    for _, mod in pairs(getgc(true)) do
-        if type(mod) == "table" and rawget(mod, "QuickOpen") then
-            mod.QuickOpen = true
-        end
-    end
-end
-tryFastOpen()
-
--- Auto Clicker for Sell button
-local autoOpening = false
-local autoBtn = Instance.new("TextButton")
-autoBtn.Size = UDim2.new(1, -20, 0, 40)
-autoBtn.Position = UDim2.new(0, 10, 0, 130)
-autoBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
-autoBtn.TextColor3 = Color3.new(1,1,1)
-autoBtn.Font = Enum.Font.GothamBold
-autoBtn.TextSize = 16
-autoBtn.Text = "Start Auto-Sell Click"
-autoBtn.Parent = frame
-
--- Dokładne pozycje przycisku 'Sprzedaj' (można zmienić w razie potrzeby)
-local sellButtonX = 890
-local sellButtonY = 336
-
-spawn(function()
-    while true do
-        if autoOpening then
-            VirtualInputManager:SendMouseButtonEvent(sellButtonX, sellButtonY, 0, true, game, 0)
-            VirtualInputManager:SendMouseButtonEvent(sellButtonX, sellButtonY, 0, false, game, 0)
-        end
-        task.wait(0.1) -- Superszybki klikacz
-    end
-end)
-
-autoBtn.MouseButton1Click:Connect(function()
-    autoOpening = not autoOpening
-    autoBtn.Text = autoOpening and "Stop Auto-Sell Click" or "Start Auto-Sell Click"
-    autoBtn.BackgroundColor3 = autoOpening and Color3.fromRGB(200, 50, 50) or Color3.fromRGB(0, 200, 100)
-end)
-
--- Minimize GUI with ]
+-- MINIMIZE BUTTON
 local minimized = false
-UserInputService.InputBegan:Connect(function(input, processed)
-    if not processed and input.KeyCode == Enum.KeyCode.RightBracket then
-        minimized = not minimized
-        frame.Visible = not minimized
+local toggleBtn = Instance.new("TextButton", frame)
+toggleBtn.Size = UDim2.new(0, 25, 0, 25)
+toggleBtn.Position = UDim2.new(1, -30, 0, 5)
+toggleBtn.Text = "-"
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+
+toggleBtn.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    for _, c in ipairs(frame:GetChildren()) do
+        if c ~= toggleBtn and not c:IsA("UIGradient") and not c:IsA("UICorner") then
+            c.Visible = not minimized
+        end
+    end
+    toggleBtn.Text = minimized and "+" or "-"
+end)
+
+uis.InputBegan:Connect(function(input, gp)
+    if not gp and input.KeyCode == Enum.KeyCode.RightBracket then
+        frame.Visible = not frame.Visible
+    end
+end)
+
+-- TITLE
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.Text = "🚀 Galactic Case Tool"
+title.Font = Enum.Font.GothamBlack
+title.TextColor3 = Color3.new(1,1,1)
+title.BackgroundTransparency = 1
+title.TextSize = 20
+
+-- SLIDERS
+local function addSlider(name, maxV, defaultV, yPos, color, callback)
+    local lbl = Instance.new("TextLabel", frame)
+    lbl.Size = UDim2.new(1, -20, 0, 20)
+    lbl.Position = UDim2.new(0, 10, 0, yPos)
+    lbl.Text = name..": "..defaultV
+    lbl.Font = Enum.Font.Gotham
+    lbl.TextSize = 14
+    lbl.TextColor3 = Color3.new(1,1,1)
+    lbl.BackgroundTransparency = 1
+
+    local track = Instance.new("Frame", frame)
+    track.Size = UDim2.new(1, -20, 0, 12)
+    track.Position = UDim2.new(0, 10, 0, yPos+20)
+    track.BackgroundColor3 = Color3.fromRGB(60,60,60)
+    local fill = Instance.new("Frame", track)
+    fill.Size = UDim2.new(defaultV/maxV, 0, 1, 0)
+    fill.BackgroundColor3 = color
+
+    local dragging = false
+    local function update(x)
+        local rel = math.clamp(x - track.AbsolutePosition.X, 0, track.AbsoluteSize.X)
+        local val = (rel / track.AbsoluteSize.X) * maxV
+        fill.Size = UDim2.new(val/maxV, 0, 1, 0)
+        lbl.Text = name..": "..math.floor(val)
+        callback(math.floor(val))
+    end
+
+    track.InputBegan:Connect(function(i)
+        if i.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            update(i.Position.X)
+        end
+    end)
+    track.InputEnded:Connect(function(i)
+        if i.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+    track.InputChanged:Connect(function(i)
+        if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
+            update(i.Position.X)
+        end
+    end)
+
+    return yPos + 40
+end
+
+local y = 40
+y = addSlider("WalkSpeed", 460, 16, y, Color3.fromRGB(0,170,255), function(v)
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.WalkSpeed = v
+    end
+end)
+y = addSlider("JumpPower", 300, 50, y, Color3.fromRGB(255,170,0), function(v)
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.JumpPower = v
+    end
+end)
+
+-- UNLOCK GAMEPASSES BUTTON
+local gpBtn = Instance.new("TextButton", frame)
+gpBtn.Size = UDim2.new(1, -20, 0, 35)
+gpBtn.Position = UDim2.new(0, 10, 0, y)
+gpBtn.Text = "Unlock All Gamepasses"
+gpBtn.Font = Enum.Font.GothamBold
+gpBtn.TextSize = 16
+gpBtn.BackgroundColor3 = Color3.fromRGB(0,150,255)
+gpBtn.TextColor3 = Color3.new(1,1,1)
+gpBtn.AutoButtonColor = true
+gpBtn.MouseButton1Click:Connect(function()
+    for _, v in ipairs(game:GetDescendants()) do
+        if v:IsA("RemoteEvent") and (v.Parent.Name:find("Remotes") or v.Parent.Name:find("Pass")) then
+            pcall(function() v:FireServer() end)
+        end
+    end
+end)
+y = y + 45
+
+-- AUTOCLICKER BUTTON
+local autoClick = false
+local clickBtn = Instance.new("TextButton", frame)
+clickBtn.Size = UDim2.new(1, -20, 0, 40)
+clickBtn.Position = UDim2.new(0, 10, 0, y)
+clickBtn.Text = "Start Autoclicker"
+clickBtn.Font = Enum.Font.GothamBold
+clickBtn.TextSize = 16
+clickBtn.TextColor3 = Color3.new(1,1,1)
+clickBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+
+clickBtn.MouseButton1Click:Connect(function()
+    autoClick = not autoClick
+    clickBtn.Text = autoClick and "Stop Autoclicker" or "Start Autoclicker"
+end)
+
+-- AUTOCLICK LOOP
+RunService.RenderStepped:Connect(function()
+    if autoClick then
+        -- Zmodyfikuj te wartości, żeby klik był idealnie w przycisk
+        local x, y = 1550, 510 -- << Współrzędne zbliżone do Twojego screena
+        VirtualInputManager:SendMouseButtonEvent(x, y, 0, true, game, 0)
+        VirtualInputManager:SendMouseButtonEvent(x, y, 0, false, game, 0)
+        wait(0.01) -- SUPER SZYBKI AUTOKLIK
     end
 end)
