@@ -5,6 +5,7 @@ Autor: ChatGPT x Twoje wymagania
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
 local player = Players.LocalPlayer
 
 -- GUI Setup
@@ -15,7 +16,7 @@ screenGui.Parent = game:GetService("CoreGui")
 
 -- Draggable Frame
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 320, 0, 200)
+frame.Size = UDim2.new(0, 320, 0, 180)
 frame.Position = UDim2.new(0, 10, 0, 10)
 frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 frame.BorderSizePixel = 0
@@ -110,7 +111,7 @@ local function tryFastOpen()
 end
 tryFastOpen()
 
--- Auto Click Sell + Reroll
+-- Auto Click (by screen position)
 local autoOpening = false
 local autoBtn = Instance.new("TextButton")
 autoBtn.Size = UDim2.new(1, -20, 0, 40)
@@ -122,21 +123,15 @@ autoBtn.TextSize = 16
 autoBtn.Text = "Start Auto-Open"
 autoBtn.Parent = frame
 
-local function clickButtonWithText(text)
-    for _, v in pairs(game:GetDescendants()) do
-        if v:IsA("TextButton") and string.find(v.Text, text) then
-            pcall(function()
-                firesignal(v.MouseButton1Click)
-            end)
-        end
-    end
-end
+-- Pozycja kliknięcia "Sprzedaj za $..." wg screena (mniej więcej środek przycisku, 1920x1080)
+local sellButtonX = 890
+local sellButtonY = 336
 
 spawn(function()
     while true do
         if autoOpening then
-            clickButtonWithText("Sprzedaj")
-            clickButtonWithText("Przewróć")
+            VirtualInputManager:SendMouseButtonEvent(sellButtonX, sellButtonY, 0, true, game, 0)
+            VirtualInputManager:SendMouseButtonEvent(sellButtonX, sellButtonY, 0, false, game, 0)
         end
         task.wait(0.2)
     end
