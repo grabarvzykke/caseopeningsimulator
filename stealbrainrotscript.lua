@@ -1,4 +1,4 @@
--- === LOKALNY SYSTEM KLUCZY - WSZYSTKO W KODZIE ===
+-- === SYSTEM KLUCZA Z PEŁNYM SKRYPTEM ===
 
 -- 🔑 Lista poprawnych kluczy
 local validKeys = {
@@ -7,7 +7,7 @@ local validKeys = {
     "VIP789"
 }
 
--- 🧠 Funkcja weryfikująca klucz
+-- 🧠 Weryfikacja
 local function verifyKey(key)
     for _, valid in ipairs(validKeys) do
         if key == valid then
@@ -84,26 +84,26 @@ local function createKeyUI()
     }
 end
 
--- ▶️ Główna część skryptu (po weryfikacji)
+-- ▶️ Główna część skryptu
 local function runMainScript()
-    -- Tutaj wklej co chcesz, żeby odpalało się po wpisaniu klucza
-    print("✅ Klucz poprawny! Skrypt uruchomiony.")
-    game.StarterGui:SetCore("SendNotification", {
-        Title = "Dostęp przyznany",
-        Text = "Miłej zabawy!",
-        Duration = 5
-    })
+    -- Tu wklej swój loader lub pobierany skrypt
+    local success, result = pcall(function()
+        return loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/StealaBrainrot"))()
+    end)
 
-    -- Przykład: pobranie i uruchomienie skryptu
-    local Games = loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/StealaBrainrot"))()
-    for PlaceID, Execute in pairs(Games) do
-        if PlaceID == game.PlaceId then
-            loadstring(game:HttpGet(Execute))()
+    if success and type(result) == "table" then
+        for placeId, scriptUrl in pairs(result) do
+            if placeId == game.PlaceId then
+                loadstring(game:HttpGet(scriptUrl))()
+                return
+            end
         end
+    else
+        warn("Nie udało się załadować głównego skryptu.")
     end
 end
 
--- 🔃 Inicjalizacja systemu
+-- 🔃 Start
 local function initKeySystem()
     local ui = createKeyUI()
 
@@ -116,24 +116,23 @@ local function initKeySystem()
             return
         end
 
-        ui.Status.Text = "🔍 Sprawdzanie klucza..."
+        ui.Status.Text = "🔍 Sprawdzanie..."
         ui.Status.TextColor3 = Color3.fromRGB(255, 255, 0)
 
         task.wait(1)
 
         if verifyKey(key) then
-            ui.Status.Text = "✅ Klucz poprawny!"
+            ui.Status.Text = "✅ Poprawny klucz!"
             ui.Status.TextColor3 = Color3.fromRGB(0, 255, 0)
-
             task.wait(1)
             ui.ScreenGui:Destroy()
             runMainScript()
         else
-            ui.Status.Text = "❌ Zły klucz!"
+            ui.Status.Text = "❌ Niepoprawny klucz!"
             ui.Status.TextColor3 = Color3.fromRGB(255, 0, 0)
         end
     end)
 end
 
--- 🔓 Start systemu
+-- 🔓 Odpal wszystko
 initKeySystem()
