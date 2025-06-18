@@ -7,30 +7,25 @@ local VirtualInputManager = game:GetService("VirtualInputManager")
 
 -- GUI SETUP
 local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-screenGui.Name = "GalacticCaseUI"
+screenGui.Name = "EnhancedCaseUI"
 screenGui.ResetOnSpawn = false
 
 local frame = Instance.new("Frame", screenGui)
-frame.Size = UDim2.new(0, 320, 0, 320)
+frame.Size = UDim2.new(0, 320, 0, 440)
 frame.Position = UDim2.new(0, 20, 0, 50)
-frame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 14)
 
--- STYLING
-local uiCorner = Instance.new("UICorner", frame)
-uiCorner.CornerRadius = UDim.new(0, 16)
+-- NEON GLOW
+local glow = Instance.new("UIStroke", frame)
+glow.Thickness = 2
+glow.Color = Color3.fromRGB(0, 255, 140)
+glow.Transparency = 0.2
 
-local uiGradient = Instance.new("UIGradient", frame)
-uiGradient.Color = ColorSequence.new{
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 170, 255)),
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 150))
-}
-uiGradient.Rotation = 45
-uiGradient.Transparency = NumberSequence.new(0.1)
-
--- MINIMIZE BUTTON
+-- MINIMIZE/OPEN BUTTON
 local minimized = false
 local toggleBtn = Instance.new("TextButton", frame)
 toggleBtn.Size = UDim2.new(0, 25, 0, 25)
@@ -38,17 +33,18 @@ toggleBtn.Position = UDim2.new(1, -30, 0, 5)
 toggleBtn.Text = "-"
 toggleBtn.Font = Enum.Font.GothamBold
 toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 
-toggleBtn.MouseButton1Click:Connect(function()
+local function toggleUI()
     minimized = not minimized
     for _, c in ipairs(frame:GetChildren()) do
-        if c ~= toggleBtn and not c:IsA("UIGradient") and not c:IsA("UICorner") then
+        if c ~= toggleBtn then
             c.Visible = not minimized
         end
     end
     toggleBtn.Text = minimized and "+" or "-"
-end)
+end
+toggleBtn.MouseButton1Click:Connect(toggleUI)
 
 uis.InputBegan:Connect(function(input, gp)
     if not gp and input.KeyCode == Enum.KeyCode.RightBracket then
@@ -60,11 +56,11 @@ end)
 local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.new(1, 0, 0, 30)
 title.Position = UDim2.new(0, 0, 0, 0)
-title.Text = "🚀 Galactic Case Tool"
-title.Font = Enum.Font.GothamBlack
-title.TextColor3 = Color3.new(1,1,1)
+title.Text = "💥 DOKURWIONY CASE OPENER 💥"
+title.Font = Enum.Font.GothamBold
+title.TextColor3 = Color3.new(0, 1, 0.8)
 title.BackgroundTransparency = 1
-title.TextSize = 20
+title.TextSize = 18
 
 -- SLIDERS
 local function addSlider(name, maxV, defaultV, yPos, color, callback)
@@ -80,7 +76,7 @@ local function addSlider(name, maxV, defaultV, yPos, color, callback)
     local track = Instance.new("Frame", frame)
     track.Size = UDim2.new(1, -20, 0, 12)
     track.Position = UDim2.new(0, 10, 0, yPos+20)
-    track.BackgroundColor3 = Color3.fromRGB(60,60,60)
+    track.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     local fill = Instance.new("Frame", track)
     fill.Size = UDim2.new(defaultV/maxV, 0, 1, 0)
     fill.BackgroundColor3 = color
@@ -115,13 +111,14 @@ local function addSlider(name, maxV, defaultV, yPos, color, callback)
 end
 
 local y = 40
-y = addSlider("WalkSpeed", 460, 16, y, Color3.fromRGB(0,170,255), function(v)
+y = addSlider("WalkSpeed", 460, 16, y, Color3.fromRGB(0, 255, 255), function(v)
     if player.Character and player.Character:FindFirstChild("Humanoid") then
         player.Character.Humanoid.WalkSpeed = v
     end
 end)
-y = addSlider("JumpPower", 300, 50, y, Color3.fromRGB(255,170,0), function(v)
+y = addSlider("JumpPower", 300, 50, y, Color3.fromRGB(255, 170, 0), function(v)
     if player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.UseJumpPower = true
         player.Character.Humanoid.JumpPower = v
     end
 end)
@@ -130,12 +127,11 @@ end)
 local gpBtn = Instance.new("TextButton", frame)
 gpBtn.Size = UDim2.new(1, -20, 0, 35)
 gpBtn.Position = UDim2.new(0, 10, 0, y)
-gpBtn.Text = "Unlock All Gamepasses"
+gpBtn.Text = "🔥 Unlock All Gamepasses 🔥"
 gpBtn.Font = Enum.Font.GothamBold
 gpBtn.TextSize = 16
 gpBtn.BackgroundColor3 = Color3.fromRGB(0,150,255)
 gpBtn.TextColor3 = Color3.new(1,1,1)
-gpBtn.AutoButtonColor = true
 gpBtn.MouseButton1Click:Connect(function()
     for _, v in ipairs(game:GetDescendants()) do
         if v:IsA("RemoteEvent") and (v.Parent.Name:find("Remotes") or v.Parent.Name:find("Pass")) then
@@ -145,29 +141,34 @@ gpBtn.MouseButton1Click:Connect(function()
 end)
 y = y + 45
 
--- AUTOCLICKER BUTTON
+-- AUTOCLICKER
 local autoClick = false
-local clickBtn = Instance.new("TextButton", frame)
-clickBtn.Size = UDim2.new(1, -20, 0, 40)
-clickBtn.Position = UDim2.new(0, 10, 0, y)
-clickBtn.Text = "Start Autoclicker"
-clickBtn.Font = Enum.Font.GothamBold
-clickBtn.TextSize = 16
-clickBtn.TextColor3 = Color3.new(1,1,1)
-clickBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+local autoBtn = Instance.new("TextButton", frame)
+autoBtn.Size = UDim2.new(1, -20, 0, 40)
+autoBtn.Position = UDim2.new(0, 10, 0, y)
+autoBtn.Text = "💣 Start Autoclicker"
+autoBtn.Font = Enum.Font.GothamBold
+autoBtn.TextSize = 16
+autoBtn.TextColor3 = Color3.new(1,1,1)
+autoBtn.BackgroundColor3 = Color3.fromRGB(0,200,100)
 
-clickBtn.MouseButton1Click:Connect(function()
+autoBtn.MouseButton1Click:Connect(function()
     autoClick = not autoClick
-    clickBtn.Text = autoClick and "Stop Autoclicker" or "Start Autoclicker"
+    autoBtn.Text = autoClick and "🛑 Stop Autoclicker" or "💣 Start Autoclicker"
 end)
 
--- AUTOCLICK LOOP
-RunService.RenderStepped:Connect(function()
-    if autoClick then
-        -- Zmodyfikuj te wartości, żeby klik był idealnie w przycisk
-        local x, y = 1550, 510 -- << Współrzędne zbliżone do Twojego screena
-        VirtualInputManager:SendMouseButtonEvent(x, y, 0, true, game, 0)
-        VirtualInputManager:SendMouseButtonEvent(x, y, 0, false, game, 0)
-        wait(0.01) -- SUPER SZYBKI AUTOKLIK
+-- AUTCLICK LOOP
+task.spawn(function()
+    while true do
+        if autoClick then
+            -- ZMIEN PUNKTY KLIKANIA TUTAJ
+            local x = 1320 -- x pixel idealny z prawej
+            local y = 510  -- y pixel zielonego przycisku
+            VirtualInputManager:SendMouseButtonEvent(x, y, 0, true, game, 0)
+            VirtualInputManager:SendMouseButtonEvent(x, y, 0, false, game, 0)
+            task.wait(0.2) -- delay 200ms
+        else
+            task.wait(0.1)
+        end
     end
 end)
