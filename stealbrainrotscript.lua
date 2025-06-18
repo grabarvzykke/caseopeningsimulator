@@ -1,126 +1,101 @@
--- Key System Script for Roblox
--- Replace the verification URL with your actual website URL
+-- === LOKALNY SYSTEM KLUCZY - WSZYSTKO W KODZIE ===
 
--- Create the key verification UI
+-- 🔑 Lista poprawnych kluczy
+local validKeys = {
+    "KOD123",
+    "SEKRET456",
+    "VIP789"
+}
+
+-- 🧠 Funkcja weryfikująca klucz
+local function verifyKey(key)
+    for _, valid in ipairs(validKeys) do
+        if key == valid then
+            return true
+        end
+    end
+    return false
+end
+
+-- 🖼️ UI
 local function createKeyUI()
     local ScreenGui = Instance.new("ScreenGui")
-    local MainFrame = Instance.new("Frame")
+    local Frame = Instance.new("Frame")
     local Title = Instance.new("TextLabel")
-    local KeyInput = Instance.new("TextBox")
-    local SubmitButton = Instance.new("TextButton")
-    local GetKeyButton = Instance.new("TextButton")
-    local StatusLabel = Instance.new("TextLabel")
-    
-    -- Configure ScreenGui
+    local Input = Instance.new("TextBox")
+    local Submit = Instance.new("TextButton")
+    local Status = Instance.new("TextLabel")
+
     ScreenGui.Name = "KeySystemUI"
     ScreenGui.Parent = game:GetService("CoreGui")
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    
-    -- Configure MainFrame
-    MainFrame.Name = "MainFrame"
-    MainFrame.Parent = ScreenGui
-    MainFrame.BackgroundColor3 = Color3.fromRGB(15, 23, 42)
-    MainFrame.BorderSizePixel = 0
-    MainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
-    MainFrame.Size = UDim2.new(0, 300, 0, 200)
-    
-    -- Configure Title
+
+    Frame.Name = "MainFrame"
+    Frame.Parent = ScreenGui
+    Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    Frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+    Frame.Size = UDim2.new(0, 300, 0, 200)
+
     Title.Name = "Title"
-    Title.Parent = MainFrame
-    Title.BackgroundColor3 = Color3.fromRGB(30, 41, 59)
-    Title.BorderSizePixel = 0
+    Title.Parent = Frame
+    Title.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     Title.Size = UDim2.new(1, 0, 0, 30)
-    Title.Font = Enum.Font.GothamSemibold
-    Title.Text = "Script Key System"
-    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Title.TextSize = 16.000
-    
-    -- Configure KeyInput
-    KeyInput.Name = "KeyInput"
-    KeyInput.Parent = MainFrame
-    KeyInput.BackgroundColor3 = Color3.fromRGB(51, 65, 85)
-    KeyInput.BorderSizePixel = 0
-    KeyInput.Position = UDim2.new(0.5, -125, 0.3, 0)
-    KeyInput.Size = UDim2.new(0, 250, 0, 30)
-    KeyInput.Font = Enum.Font.Gotham
-    KeyInput.PlaceholderText = "Enter your key here..."
-    KeyInput.Text = ""
-    KeyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-    KeyInput.TextSize = 14.000
-    
-    -- Configure SubmitButton
-    SubmitButton.Name = "SubmitButton"
-    SubmitButton.Parent = MainFrame
-    SubmitButton.BackgroundColor3 = Color3.fromRGB(34, 197, 94)
-    SubmitButton.BorderSizePixel = 0
-    SubmitButton.Position = UDim2.new(0.5, -60, 0.55, 0)
-    SubmitButton.Size = UDim2.new(0, 120, 0, 30)
-    SubmitButton.Font = Enum.Font.GothamSemibold
-    SubmitButton.Text = "Submit Key"
-    SubmitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    SubmitButton.TextSize = 14.000
-    
-    -- Configure GetKeyButton
-    GetKeyButton.Name = "GetKeyButton"
-    GetKeyButton.Parent = MainFrame
-    GetKeyButton.BackgroundColor3 = Color3.fromRGB(51, 65, 85)
-    GetKeyButton.BorderSizePixel = 0
-    GetKeyButton.Position = UDim2.new(0.5, -60, 0.75, 0)
-    GetKeyButton.Size = UDim2.new(0, 120, 0, 30)
-    GetKeyButton.Font = Enum.Font.GothamSemibold
-    GetKeyButton.Text = "Get Key"
-    GetKeyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    GetKeyButton.TextSize = 14.000
-    
-    -- Configure StatusLabel
-    StatusLabel.Name = "StatusLabel"
-    StatusLabel.Parent = MainFrame
-    StatusLabel.BackgroundTransparency = 1
-    StatusLabel.Position = UDim2.new(0, 0, 0.9, 0)
-    StatusLabel.Size = UDim2.new(1, 0, 0, 20)
-    StatusLabel.Font = Enum.Font.Gotham
-    StatusLabel.Text = ""
-    StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    StatusLabel.TextSize = 12.000
-    
+    Title.Font = Enum.Font.GothamBold
+    Title.Text = "🔐 Wpisz Klucz"
+    Title.TextColor3 = Color3.new(1, 1, 1)
+    Title.TextSize = 16
+
+    Input.Name = "KeyInput"
+    Input.Parent = Frame
+    Input.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Input.Position = UDim2.new(0.5, -125, 0.3, 0)
+    Input.Size = UDim2.new(0, 250, 0, 30)
+    Input.Font = Enum.Font.Gotham
+    Input.PlaceholderText = "Wpisz swój klucz..."
+    Input.Text = ""
+    Input.TextColor3 = Color3.new(1, 1, 1)
+    Input.TextSize = 14
+
+    Submit.Name = "SubmitButton"
+    Submit.Parent = Frame
+    Submit.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+    Submit.Position = UDim2.new(0.5, -60, 0.6, 0)
+    Submit.Size = UDim2.new(0, 120, 0, 30)
+    Submit.Font = Enum.Font.GothamSemibold
+    Submit.Text = "Sprawdź Klucz"
+    Submit.TextColor3 = Color3.new(1, 1, 1)
+    Submit.TextSize = 14
+
+    Status.Name = "StatusLabel"
+    Status.Parent = Frame
+    Status.BackgroundTransparency = 1
+    Status.Position = UDim2.new(0, 0, 0.85, 0)
+    Status.Size = UDim2.new(1, 0, 0, 20)
+    Status.Font = Enum.Font.Gotham
+    Status.Text = ""
+    Status.TextColor3 = Color3.new(1, 1, 1)
+    Status.TextSize = 12
+
     return {
         ScreenGui = ScreenGui,
-        KeyInput = KeyInput,
-        SubmitButton = SubmitButton,
-        GetKeyButton = GetKeyButton,
-        StatusLabel = StatusLabel
+        Input = Input,
+        Submit = Submit,
+        Status = Status
     }
 end
 
--- Verify key with server
-local function verifyKey(key)
-    -- Replace with your website URL
-    local url = "https://luarmor.org/?verify=1&key=" .. key
-    
-    local success, response = pcall(function()
-        return game:HttpGet(url)
-    end)
-    
-    if success then
-        if response == "valid" then
-            return true, "valid"
-        elseif response == "expired" then
-            return false, "expired"
-        elseif response == "used" then
-            return false, "used"
-        else
-            return false, "invalid"
-        end
-    else
-        return false, "error"
-    end
-end
-
--- Run the script after key verification
+-- ▶️ Główna część skryptu (po weryfikacji)
 local function runMainScript()
-    -- Your original script logic here
-    local Games = loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/StealaBrainrot"))()
+    -- Tutaj wklej co chcesz, żeby odpalało się po wpisaniu klucza
+    print("✅ Klucz poprawny! Skrypt uruchomiony.")
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "Dostęp przyznany",
+        Text = "Miłej zabawy!",
+        Duration = 5
+    })
 
+    -- Przykład: pobranie i uruchomienie skryptu
+    local Games = loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/StealaBrainrot"))()
     for PlaceID, Execute in pairs(Games) do
         if PlaceID == game.PlaceId then
             loadstring(game:HttpGet(Execute))()
@@ -128,63 +103,37 @@ local function runMainScript()
     end
 end
 
--- Initialize key system and UI
+-- 🔃 Inicjalizacja systemu
 local function initKeySystem()
     local ui = createKeyUI()
-    
-    -- Handle Get Key button
-    ui.GetKeyButton.MouseButton1Click:Connect(function()
-        -- Website URL to get key
-        local keyWebsite = "https://luarmor.org/"
-        
-        -- Copy URL to clipboard
-        setclipboard(keyWebsite)
-        
-        ui.StatusLabel.Text = "Key website URL copied to clipboard! Paste in your browser."
-        ui.StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-    end)
-    
-    -- Handle Submit button
-    ui.SubmitButton.MouseButton1Click:Connect(function()
-        local key = ui.KeyInput.Text
-        
+
+    ui.Submit.MouseButton1Click:Connect(function()
+        local key = ui.Input.Text
+
         if key == "" then
-            ui.StatusLabel.Text = "Please enter a key!"
-            ui.StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+            ui.Status.Text = "⚠️ Wpisz klucz!"
+            ui.Status.TextColor3 = Color3.fromRGB(255, 0, 0)
             return
         end
-        
-        ui.StatusLabel.Text = "Verifying key..."
-        ui.StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
-        
-        task.delay(1.5, function()
-            local isValid, status = verifyKey(key)
-            
-            if isValid then
-                ui.StatusLabel.Text = "Key verified successfully!"
-                ui.StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-                
-                task.delay(1, function()
-                    ui.ScreenGui:Destroy()
-                    runMainScript()
-                end)
-            else
-                if status == "expired" then
-                    ui.StatusLabel.Text = "This key has expired! Keys expire after 24 hours."
-                    ui.StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-                elseif status == "used" then
-                    ui.StatusLabel.Text = "This key has already been used!"
-                    ui.StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-                else
-                    ui.StatusLabel.Text = "Invalid key! Please try again."
-                    ui.StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-                end
-            end
-        end)
+
+        ui.Status.Text = "🔍 Sprawdzanie klucza..."
+        ui.Status.TextColor3 = Color3.fromRGB(255, 255, 0)
+
+        task.wait(1)
+
+        if verifyKey(key) then
+            ui.Status.Text = "✅ Klucz poprawny!"
+            ui.Status.TextColor3 = Color3.fromRGB(0, 255, 0)
+
+            task.wait(1)
+            ui.ScreenGui:Destroy()
+            runMainScript()
+        else
+            ui.Status.Text = "❌ Zły klucz!"
+            ui.Status.TextColor3 = Color3.fromRGB(255, 0, 0)
+        end
     end)
-    
-    return ui
 end
 
--- Start the key system
+-- 🔓 Start systemu
 initKeySystem()
