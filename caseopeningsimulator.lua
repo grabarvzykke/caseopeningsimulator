@@ -1,4 +1,4 @@
-local Rayfield = loadstring(game:HttpGet('https://[Log in to view URL]'))()
+local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/grabarvzykke/caseopeningsimulator/refs/heads/main/caseopeningsimulator.lua"))()
 
 local Window = Rayfield:CreateWindow({
    Name = "All Gamepasses Script",
