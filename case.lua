@@ -109,9 +109,8 @@ button.Parent = frame
 button.MouseButton1Click:Connect(function()
     for _, v in pairs(game:GetDescendants()) do
         if v:IsA("RemoteEvent") and (
-            v.Parent.Name == "WeaponsRemotes" or
-            v.Parent.Name == "VipRemotes" or
-            v.Parent.Name == "Remotes"
+            v.Name == "HydraEvent" or
+            v.Name == "BloodhoundEvent"
         ) then
             v:FireServer()
         end
