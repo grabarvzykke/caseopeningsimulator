@@ -12,7 +12,7 @@ screenGui.ResetOnSpawn = false
 
 -- MAIN FRAME
 local frame = Instance.new("Frame", screenGui)
-frame.Size = UDim2.new(0, 320, 0, 700)
+frame.Size = UDim2.new(0, 320, 0, 500)
 frame.Position = UDim2.new(0, 30, 0, 60)
 frame.BackgroundColor3 = Color3.fromRGB(10, 10, 30)
 frame.BorderSizePixel = 0
@@ -145,84 +145,24 @@ gpBtn.MouseButton1Click:Connect(function()
 end)
 y = y + 45
 
--- AUTOCLICKER BUTTON
-local autoClickBtn = Instance.new("TextButton", frame)
-autoClickBtn.Size = UDim2.new(1, -20, 0, 35)
-autoClickBtn.Position = UDim2.new(0, 10, 0, y)
-autoClickBtn.Text = "Toggle Autoclicker ["]"]"
-autoClickBtn.Font = Enum.Font.GothamBold
-autoClickBtn.TextSize = 16
-autoClickBtn.BackgroundColor3 = Color3.fromRGB(0,255,0)
-autoClickBtn.TextColor3 = Color3.new(0,0,0)
-autoClickBtn.MouseButton1Click:Connect(function()
-    clicking = not clicking
-end)
-y = y + 45
-
--- CASES OPENED COUNTER
-local openedLabel = Instance.new("TextLabel", frame)
-openedLabel.Size = UDim2.new(1, -20, 0, 20)
-openedLabel.Position = UDim2.new(0, 10, 0, y)
-openedLabel.Text = "Cases Opened: 0"
-openedLabel.Font = Enum.Font.Gotham
-title.TextSize = 14
-openedLabel.TextColor3 = Color3.new(1, 1, 1)
-openedLabel.BackgroundTransparency = 1
-y = y + 25
-
--- LOADSTRING EXECUTOR
-local box = Instance.new("TextBox", frame)
-box.Size = UDim2.new(1, -20, 0, 60)
-box.Position = UDim2.new(0, 10, 0, y)
-box.PlaceholderText = "Wklej kod Lua..."
-box.Text = ""
-box.TextWrapped = true
-box.ClearTextOnFocus = false
-box.Font = Enum.Font.Code
-box.TextSize = 14
-box.TextColor3 = Color3.new(1,1,1)
-box.BackgroundColor3 = Color3.fromRGB(40, 40, 80)
-Instance.new("UICorner", box).CornerRadius = UDim.new(0, 6)
-y = y + 65
-
-local executeBtn = Instance.new("TextButton", frame)
-executeBtn.Size = UDim2.new(1, -20, 0, 35)
-executeBtn.Position = UDim2.new(0, 10, 0, y)
-executeBtn.Text = "Execute Code"
-executeBtn.Font = Enum.Font.GothamBold
-executeBtn.TextSize = 16
-executeBtn.BackgroundColor3 = Color3.fromRGB(255,80,80)
-executeBtn.TextColor3 = Color3.new(1,1,1)
-executeBtn.MouseButton1Click:Connect(function()
-    local code = box.Text
-    local func, err = loadstring(code)
-    if func then
-        pcall(func)
-    else
-        warn("Błąd w kodzie:", err)
-    end
-end)
-y = y + 45
-
 -- AUTOCLICKER SETUP
 local clicking = false
-local totalOpened = 0
-local antiAFK = true
+local clickPos = Vector2.new(0, 0)
+
+uis.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if input.KeyCode == Enum.KeyCode.LeftBracket then
+        clickPos = uis:GetMouseLocation()
+        clicking = not clicking
+    end
+end)
 
 -- AUTCLICK LOOP
 spawn(function()
     while true do
         if clicking then
-            for _, v in ipairs(game:GetDescendants()) do
-                if v:IsA("ImageButton") and v.Name == "OpenCase" and v.BackgroundColor3 == Color3.fromRGB(0,255,0) then
-                    local pos = v.AbsolutePosition + v.AbsoluteSize / 2
-                    VirtualInputManager:SendMouseButtonEvent(pos.X, pos.Y, 0, true, game, 0)
-                    VirtualInputManager:SendMouseButtonEvent(pos.X, pos.Y, 0, false, game, 0)
-                    totalOpened += 1
-                    openedLabel.Text = "Cases Opened: "..totalOpened
-                    break
-                end
-            end
+            VirtualInputManager:SendMouseButtonEvent(clickPos.X, clickPos.Y, 0, true, game, 0)
+            VirtualInputManager:SendMouseButtonEvent(clickPos.X, clickPos.Y, 0, false, game, 0)
         end
         task.wait(0.3)
     end
@@ -234,19 +174,3 @@ uis.InputBegan:Connect(function(input, gp)
         frame.Visible = not frame.Visible
     end
 end)
-
--- START AUTOCLICKER [LEFT BRACKET]
-uis.InputBegan:Connect(function(input, gp)
-    if gp then return end
-    if input.KeyCode == Enum.KeyCode.LeftBracket then
-        clicking = not clicking
-    end
-end)
-
--- ANTI-AFK
-if antiAFK then
-    player.Idled:Connect(function()
-        VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
-        VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
-    end)
-end
